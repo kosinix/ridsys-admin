@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="{{app.description}}">
+    <title>{{app.title}}</title>
+
+    <!-- Bootstrap -->
+    <link rel="shortcut icon" href="{{app.url}}/favicon.png" />
+    <link rel="stylesheet" href="{{app.url}}/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{{app.url}}/css/style.css" />
+</head>
+<body class="{% if hideNav == 'true' %}hide-menu{% endif %}">
+{% include 'parts/sidebar.html' %}
+<main role="main" class="main">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-md-12 bg-light pt-2 pb-2">
+                <div class="d-flex justify-content-betweenx align-items-center">
+                    <div class="">
+                        <button class="toggler mr-3">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </button>
+                    </div>
+                    <div class="flex-fill">
+                        <h1 class="h4 pt-1">Menu</h1>
+                    </div>
+                    <div class="">
+                        <form class="form-search" action="/search">
+                            <input type="search" class="form-control" placeholder="search">
+                        </form>
+                    </div>
+                    <div class="text-right pl-3">
+                        Hi {{user.firstName}}, <a href="/logout">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            {% block body %}{% endblock %}
+        </div>
+    </div>
+</main>
+{% block scripts %}
+<script src="{{app.url}}/js/jquery.min.js"></script>
+<script src="{{app.url}}/js/popper.min.js"></script>
+<script src="{{app.url}}/js/bootstrap.min.js"></script>
+<script src="{{app.url}}/js/lodash.min.js"></script>
+<script src="{{app.url}}/js/moment.min.js"></script>
+<!--<script src="{{app.url}}/js/axios.min.js"></script>-->
+<script src="{{app.url}}/js/vue.js"></script>
+<!--<script src="{{app.url}}/js/zxcvbn.js"></script>-->
+<script src="{{app.url}}/js/vuelidate.min.js"></script>
+<script src="{{app.url}}/js/validators.min.js"></script>
+<script src="{{app.url}}/js/vuelidate-extend.js"></script>
+<script src="{{app.url}}/js/script-cookies.js"></script>
+<script src="{{app.url}}/js/script.js"></script>
+{% endblock %}
+</html>

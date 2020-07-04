@@ -1,0 +1,70 @@
+{% extends "document.html" %}
+
+{% block body %}
+<div class="col-md-12">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div class="d-flex align-items-start">
+            <div class="pt-2">
+                {% include 'parts/btn-toggle.html' %}
+            </div>
+            <h1 class="h2 ml-2">Entities</h1>
+        </div>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group mr-2">
+                <a href="/entity/create" class="btn btn-sm btn-outline-primary">Add Entity</a>
+            </div>
+        </div>
+    </div>
+    {% include 'parts/flash.html' %}
+    {% if entities.length <= 0 %}
+        <p>None found.</p>
+    {% else %}
+
+        <div class="d-flex justify-content-end">
+            <div class=" pb-3">
+                <form id="form" action="/entity/all">
+                    <select onchange="document.getElementById('form').submit()" name="perPage" id="perPage" class="form-control">
+                        <option {% if query.perPage == 1 %}selected{% endif %} value="1">1</option>
+                        <option {% if query.perPage == 2 %}selected{% endif %} value="2">2</option>
+                        <option {% if query.perPage == 5 %}selected{% endif %} value="5">5</option>
+                        <option {% if query.perPage == 10 %}selected{% endif %} value="10">10</option>
+                        <option {% if query.perPage == 20 %}selected{% endif %} value="20">20</option>
+                        <option {% if query.perPage == 50 %}selected{% endif %} value="50">50</option>
+                    </select>
+                </form>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                            {% set thId = 'name' %}
+                            {% include 'parts/sorted-th.html' %}
+                        </th>
+                        <th>Doors</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for entity in entities %}
+                    <tr>
+                        <td><a href="/entity/{{entity._id}}">{{entity.name}}</a></td>
+                        <td><a href="/entity/{{entity._id}}">{{entity.doors.length}}</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+
+            <div class="col-md-6 text-center text-md-left">
+
+            </div>
+            <div class="col-md-6 text-center text-md-right">
+                {% include "parts/pagination.html" %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+

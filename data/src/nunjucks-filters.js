@@ -154,7 +154,6 @@ const extended = (env)=>{
      * Merge query string with default querystring.
      */
     env.addFilter('query_string', (defs, params) => {
-        console.log(defs, params)
         let merged = { ...defs, ...params }
         return querystring.stringify(merged);
     });

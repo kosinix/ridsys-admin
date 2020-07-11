@@ -83,4 +83,50 @@ router.get('/access-point', middlewares.requireAuthDoor, async (req, res, next) 
     }
 });
 
+router.get('/access-point/find', middlewares.requireAuthDoor, async (req, res, next) => {
+    try {
+        let authDoor = res.authDoor
+        let code = lodash.get(req, 'query.code')
+
+        let person = await db.main.Person.findOne({
+            uid: code
+        })
+
+        if(!person){
+            throw new Error('Person not found.')
+        }
+
+        let log = new db.main.Log({
+            personId: person._id,
+            doorId: authDoor._id,
+            inside: true,
+            timeIn: new Date()
+        })
+
+        let prevLog = await db.main.Log.findOne({
+            personId: person._id,
+            doorId: authDoor._id,
+        }).sort({createdAt: -1})
+
+        if(prevLog){
+            if(prevLog.inside){
+                prevLog.inside = false
+                prevLog.timeOut = new Date()
+                log = prevLog
+            }
+        }
+
+        await log.save()
+
+        res.render('access-point/check-in.html',{
+            authDoor: authDoor.toObject(),
+            person: person,
+            log: log,
+        })
+
+    } catch (err) {
+        next(err);
+    }
+});
+
 module.exports = router;

@@ -1,23 +1,35 @@
 {% extends "document-public.html" %}
 
 {% block body %}
-<div class="col-md-4 col-sm-6 ml-auto mr-auto pt-5 mt-5">
+<div class="col-md-6 ml-auto mr-auto pt-5 mt-5">
     <div id="vApp" v-cloak>
         <form ref="form" v-on:submit.prevent="onSubmit" action="/access-point/find" method="GET" class="form-login" novalidate>
             <div class="form-header">
-                <h1 class="h6 mb-0">Access Point Scanner</h1>
+                <h1 class="h6 mb-0">Access Point Scanner: {{authDoor.name}}</h1>
             </div>
             <div class="form-body text-center">
-                <input type="hidden" name="code" v-model="code">
-                <canvas id="canvas" style="width:100%; max-width:400px; min-height:300px; margin:0 auto; background:black" ></canvas>
-                {# <button v-on:click="onCapture">Scan QR Code</button> #}
-                <p>Point QR Code</p>
-                <hr>
-                <p class="mb-0 mt-5"><a class="btn btn-sm" href="/access-point/logout">
-                    <svg style="width:16px;height:16px" viewBox="0 0 24 24">
-                        <path fill="currentColor" d="M22 17V16.5C22 15.12 20.88 14 19.5 14S17 15.12 17 16.5V17C16.45 17 16 17.45 16 18V22C16 22.55 16.45 23 17 23H22C22.55 23 23 22.55 23 22V18C23 17.45 22.55 17 22 17M21 17H18V16.5C18 15.67 18.67 15 19.5 15S21 15.67 21 16.5V17M14 20H4V17C4 14.33 9.33 13 12 13C13.08 13 14.6 13.22 16 13.66C15.61 14.15 15.33 14.74 15.16 15.38C14.19 15.1 13.09 14.9 12 14.9C9.03 14.9 5.9 16.36 5.9 17V18.1H14V20M12 12C14.21 12 16 10.21 16 8S14.21 4 12 4 8 5.79 8 8 9.79 12 12 12M12 6C13.11 6 14 6.9 14 8S13.11 10 12 10 10 9.11 10 8 10.9 6 12 6Z" />
-                    </svg>
-                </a></p>
+                <div v-if="remaining > 0" class="h3 mb-4">
+                    <div v-if="!hideCancel" class="mb-4">Returning to scanner in ${remaining} seconds...</div>
+                    <button v-on:click.prevent="onCancel" v-if="!hideCancel" class="btn btn-danger" type="button">Cancel Return</button>
+                    <a v-if="hideCancel" class="btn btn-success" href="/access-point">Return to scanner</a>
+                </div>
+                {% if log.inside %}
+                <div class="alert alert-warning text-left">You have entered the building {{log.timeIn|from_now}} <br>Time-in: {{log.timeIn|format_date("hh:mm:ss A")}}.</div>
+                {% else %}
+                <div class="alert alert-success text-left">You have exited the building {{log.timeOut|from_now}}
+                    <br>Time-in: {{log.timeIn|format_date("hh:mm:ss A")}}.
+                    <br>Time-out: {{log.timeOut|format_date("hh:mm:ss A")}}.</div>
+                {% endif %}
+                <div class="profile-photo">
+                    {% if person.profilePhoto %}
+                    <img src="{{person.profilePhoto|s3_url('medium')}}" alt="photo">
+                    {% else %}
+                    <span class="initials">{{person.firstName|first}} {{person.lastName|first}}</span>
+                    {% endif %}
+                </div>
+                <h1 class="h3 mb-5"><u>{{person.firstName}}</u> <u>{{person.lastName}}</u></h1>
+                <p class="text-left">Address: {{person.address}}</p>
+
             </div>
         </form>
     </div>
@@ -35,15 +47,29 @@
             window.vuelidateExtendMixin,
         ],
         data: {
-            code: ''
+            code: '',
+            remaining: 5,
+            timer: null,
+            hideCancel: false
         },
         validations: {
 
         },
         mounted: function(){
-            this.onCapture()
+            var me = this;
+            me.timer = setInterval(function(){
+                me.remaining -= 1;
+                if (me.remaining <= 0) {
+                    clearInterval(me.timer)
+                    window.location.replace("/access-point");
+                }
+            },1000)
         },
         methods: {
+            onCancel: function(){
+                this.hideCancel = true;
+                clearInterval(this.timer)
+            },
             onCapture: function() {
                 var me = this;
                 var video = document.createElement("video");

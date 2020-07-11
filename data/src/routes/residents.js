@@ -24,12 +24,11 @@ router.use('/resident', middlewares.requireAuthUser )
 router.get('/resident/all', middlewares.guardRoute(['read_all_resident', 'read_resident']), async (req, res, next) => {
     try {
         let page = parseInt(lodash.get(req, 'query.page', 1))
-        let perPage = parseInt(lodash.get(req, 'query.perPage', 1))
+        let perPage = parseInt(lodash.get(req, 'query.perPage', lodash.get(req, 'session.pagination.perPage', 10)))
         let sortBy = lodash.get(req, 'query.sortBy', '_id')
         let sortOrder = parseInt(lodash.get(req, 'query.sortOrder', 1))
         let customSort = parseInt(lodash.get(req, 'query.customSort'))
-
-
+        lodash.set(req, 'session.pagination.perPage', perPage)
 
         let query = {}
         let projection = {}
@@ -44,14 +43,11 @@ router.get('/resident/all', middlewares.guardRoute(['read_all_resident', 'read_r
             req.query
         )
 
-
         let options = { skip: (page - 1) * perPage, limit: perPage };
         let sort = {}
         sort = lodash.set(sort, sortBy, sortOrder)
 
-
-        console.log(query, projection, options, sort)
-
+        // console.log(query, projection, options, sort)
 
         let residents = await db.main.Person.find(query, projection, options).sort(sort)
 
@@ -166,16 +162,12 @@ router.post('/resident/personal/:personId', middlewares.guardRoute(['create_resi
 router.get('/resident/address/:personId', middlewares.guardRoute(['create_resident', 'update_resident']), middlewares.getPerson, async (req, res, next) => {
     try {
         let person = res.person
-        let regions = lodash.map(phAddress.regions, (o) => {
-            return {
-                value: o.regCode,
-                text: o.regDesc,
-            }
+        person.address = await db.main.Address.findOneFullAddress({
+            code: person.addressPsgc
         })
         res.render('resident/address.html', {
             flash: flash.get(req, 'resident'),
             person: person,
-            regions: regions,
         });
     } catch (err) {
         next(err);
@@ -187,25 +179,14 @@ router.post('/resident/address/:personId', middlewares.guardRoute(['create_resid
         let body = req.body
         let patch = {}
 
+        if(!body.psgc){
+            throw new Error('Invalid address.')
+        }
+        
         lodash.set(patch, 'addresses.0._id', db.mongoose.Types.ObjectId())
-        lodash.set(patch, 'addresses.0.unit', lodash.get(body, 'unit1'))
-        lodash.set(patch, 'addresses.0.brgyDistrict', lodash.get(body, 'brgyDistrict1'))
-        lodash.set(patch, 'addresses.0.cityMun', lodash.get(body, 'cityMun1'))
-        lodash.set(patch, 'addresses.0.province', lodash.get(body, 'province1'))
-        lodash.set(patch, 'addresses.0.region', lodash.get(body, 'region1'))
-        // lodash.set(patch, 'addresses.1._id', db.mongoose.Types.ObjectId())
-        // lodash.set(patch, 'addresses.1.unit', lodash.get(body, 'unit2'))
-        // lodash.set(patch, 'addresses.1.brgyDistrict', lodash.get(body, 'brgyDistrict2'))
-        // lodash.set(patch, 'addresses.1.cityMun', lodash.get(body, 'cityMun2'))
-        // lodash.set(patch, 'addresses.1.province', lodash.get(body, 'province2'))
-        // lodash.set(patch, 'addresses.1.region', lodash.get(body, 'region2'))
+        lodash.set(patch, 'addresses.0.unit', lodash.get(body, 'unit'))
+        lodash.set(patch, 'addresses.0.psgc', lodash.get(body, 'psgc'))
         lodash.set(patch, 'addressPermanent', lodash.get(patch, 'addresses.0._id'))
-        // lodash.set(patch, 'addressPresent', lodash.get(patch, 'addresses.1._id'))
-        // if(body.addressSame === 'true'){
-        //     patch.addresses.splice(1,1) // Remove second array
-        //     lodash.set(patch, 'addressPresent', lodash.get(patch, 'addresses.0._id'))
-        // }
-
 
         lodash.merge(person, patch)
         await person.save()

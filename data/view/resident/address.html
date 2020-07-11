@@ -9,8 +9,30 @@
 
     <div class="tab-content pt-3 pb-2 pl-3 pr-2">
         <form ref="form" id="vApp" v-cloak v-on:submit.prevent="onSubmit" action="/resident/address/{{person._id}}" method="POST" class="form-default">
-
-            {% include 'parts/permanent-address.html' %}
+            <div class="form-group">
+                <label for="psgc">Address <span class="text-danger">*</span></label>
+                <div>
+                    <autocomplete v-model="psgc"
+                        name="psgc"
+                        initial-value="{{person.addressPsgc}}"
+                        initial-display="{{person.address}}"
+                        placeholder="Type your barangay and city/municipality..."
+                        :source="dataSource"
+                        input-class="form-control"
+                        :request-headers="headers"
+                        v-on:selected="onSelect"
+                        >
+                    </autocomplete>
+                    <small class="invalid-feedback">${getError('psgc')}</small>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="unit">House No. or Street No. or Purok</label>
+                <div>
+                    <input name="unit" id="unit" v-model="unit" type="text" class="form-control">
+                    <small class="invalid-feedback">${getError('unit')}</small>
+                </div>
+            </div>
 
             <div class="form-row pt-3 pb-3">
                 <div class="col-md-12">
@@ -32,26 +54,17 @@
         mixins: [
             window.vuelidate.validationMixin,
             window.vuelidateExtendMixin,
-            window.VuePhAddress.mixin,
-            window.VuePhAddress.mixinRegions,
-            window.VuePhAddress.mixinPresentAddress,
-            window.VuePhAddress.mixinPermanentAddress,
+            VuePhAddress.mixin
         ],
+        components: {
+            'autocomplete': window["vuejs-autocomplete"]
+        },
         data: {
-            region1: '{{person.addressRegion|default("06", true)}}',
-            province1: '{{person.addressProvince|default("0679", true)}}',
-            cityMun1: '{{person.addressCityMun|default("067901", true)}}',
-            brgyDistrict1: '{{person.addressBrgyDistrict|default("", true)}}',
-            unit1: '{{person.addressUnit|default("", true)}}',
+            psgc: '{{person.addressPsgc}}',
+            unit: '{{person.addressUnit}}',
         },
         validations: {
-            region1: {
-                required: window.validators.required
-            },
-            cityMun1: {
-                required: window.validators.required
-            },
-            brgyDistrict1: {
+            psgc: {
                 required: window.validators.required
             },
         },

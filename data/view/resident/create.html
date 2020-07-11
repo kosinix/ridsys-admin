@@ -48,7 +48,6 @@
 {% endblock %}
 {% block scripts %}
 {{ super() }}
-<script src="{{app.url}}/js/vue-ph-address.js"></script>
 <script>
     var vApp = new Vue({
         el: '#vApp',
@@ -56,10 +55,6 @@
         mixins: [
             window.vuelidate.validationMixin,
             window.vuelidateExtendMixin,
-            window.VuePhAddress.mixin,
-            window.VuePhAddress.mixinRegions,
-            window.VuePhAddress.mixinPresentAddress,
-            window.VuePhAddress.mixinPermanentAddress,
         ],
         data: {
             firstName: '',

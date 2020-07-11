@@ -43,7 +43,7 @@
     "mongoose": "^5.9.18",
     "nanoid": "^3.1.10",
     "nunjucks": "^3.2.1",
-    "ph-address": "^1.2.1",
+    "ph-address": "^2.0.0",
     "pigura": "^1.0.1",
     "qr-image": "^3.2.0",
     "sharp": "^0.25.3",

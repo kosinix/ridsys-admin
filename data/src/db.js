@@ -22,6 +22,7 @@ main.on('disconnected', () => {
     console.log('Database disconnected from', conf.host + '/' + conf.db);
 });
 
+main.Address = main.model('Address', require('./models/address'));
 main.App = main.model('App', require('./models/app'));
 main.Application = main.model('Application', require('./models/application'));
 main.Door = main.model('Door', require('./models/door'));

@@ -79,27 +79,10 @@ const schema = new Schema({
             unit: {
                 $type: String,
                 trim: true,
-                default: ""
             },
-            brgyDistrict: {
+            psgc: {
                 $type: String,
                 trim: true,
-                default: ""
-            },
-            cityMun: {
-                $type: String,
-                trim: true,
-                default: ""
-            },
-            province: {
-                $type: String,
-                trim: true,
-                default: ""
-            },
-            region: {
-                $type: String,
-                trim: true,
-                default: ""
             },
             zipCode: {
                 $type: Number,
@@ -195,7 +178,7 @@ const schema = new Schema({
 }, {timestamps: true, typeKey: '$type'})
 
 //// Virtuals
-schema.virtual('address').get(function() {
+schema.virtual('addressPsgc').get(function() {
     let me = this
     let address = []
     let permanentAddress = lodash.find(this.addresses, (o) => {
@@ -206,91 +189,11 @@ schema.virtual('address').get(function() {
     }
 
     // Unit
-    if(permanentAddress.unit) {
-        address.push(permanentAddress.unit)
-    }
-
-    // Barangay
-    if(permanentAddress.brgyDistrict) {
-        address.push(permanentAddress.brgyDistrict)
-    }
-
-    // City/Mun
-    let cityMun = lodash.find(phAddress.citiesMuns, (o)=>{
-        return o.citymunCode === permanentAddress.cityMun
-    })
-    if(cityMun) {
-        address.push(cityMun.citymunDesc)
-    }
-
-    // Province
-    let province = lodash.find(phAddress.provinces, (o)=>{
-        return o.provCode === cityMun.provCode
-    })
-    if(province) {
-        address.push(province.provDesc)
-    }
-
-    return address.join(', ')
-});
-
-schema.virtual('addressRegion').get(function() {
-    let me = this
-    let address = []
-    let permanentAddress = lodash.find(this.addresses, (o) => {
-        return o._id.toString() === me.addressPermanent.toString()
-    })
-    if(!permanentAddress) {
-        return ''
-    }
-
-    return permanentAddress.region
-});
-
-schema.virtual('addressProvince').get(function() {
-    let me = this
-    let address = []
-    let permanentAddress = lodash.find(this.addresses, (o) => {
-        return o._id.toString() === me.addressPermanent.toString()
-    })
-    if(!permanentAddress) {
-        return ''
-    }
-
-    return permanentAddress.province
-});
-
-schema.virtual('addressCityMun').get(function() {
-    let me = this
-    let address = []
-    let permanentAddress = lodash.find(this.addresses, (o) => {
-        return o._id.toString() === me.addressPermanent.toString()
-    })
-    if(!permanentAddress) {
-        return ''
-    }
-
-    // City/Mun
-    return permanentAddress.cityMun
-});
-
-schema.virtual('addressBrgyDistrict').get(function() {
-    let me = this
-    let address = []
-    let permanentAddress = lodash.find(this.addresses, (o) => {
-        return o._id.toString() === me.addressPermanent.toString()
-    })
-    if(!permanentAddress) {
-        return ''
-    }
-
-    // Barangay
-    return permanentAddress.brgyDistrict
+    return permanentAddress.psgc
 });
 
 schema.virtual('addressUnit').get(function() {
     let me = this
-    let address = []
     let permanentAddress = lodash.find(this.addresses, (o) => {
         return o._id.toString() === me.addressPermanent.toString()
     })

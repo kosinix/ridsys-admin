@@ -16,9 +16,9 @@ let paginate = (page, totalDocs, perPage, urlBase, existingQuery, width = 5) => 
         urlBase: urlBase,
         pages: 0,
     }
-    if (pagination.perPage > pagination.totalDocs) pagination.perPage = pagination.totalDocs;
-    pagination.pages = Math.floor(pagination.totalDocs / pagination.perPage);
-    if (pagination.totalDocs % pagination.perPage > 0) {
+    if (perPage > pagination.totalDocs) perPage = pagination.totalDocs;
+    pagination.pages = Math.floor(pagination.totalDocs / perPage);
+    if (pagination.totalDocs % perPage > 0) {
         pagination.pages += 1;
     }
     // Turn pages from int into array

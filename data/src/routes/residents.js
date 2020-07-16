@@ -51,20 +51,6 @@ router.get('/resident/all', middlewares.guardRoute(['read_all_resident', 'read_r
 
         let residents = await db.main.Person.find(query, projection, options).sort(sort)
 
-            // .aggregate(
-            //
-            //
-            //     // Expand the scores array into a stream of documents
-            //     { $unwind: '$addresses' },
-            //
-            //
-            //
-            //     // Sort in descending order
-            //     { $sort: {
-            //             'addresses.cityMun': 1
-            //         }}
-            // )
-
         res.render('resident/all.html', {
             flash: flash.get(req, 'resident'),
             residents: residents,
@@ -95,25 +81,7 @@ router.post('/resident/create', middlewares.guardRoute(['create_resident']), asy
         lodash.set(patch, 'suffix', lodash.get(body, 'suffix'))
         lodash.set(patch, 'birthDate', lodash.get(body, 'birthDate'))
         lodash.set(patch, 'gender', lodash.get(body, 'gender'))
-        // lodash.set(patch, 'addresses.0._id', db.mongoose.Types.ObjectId())
-        // lodash.set(patch, 'addresses.0.unit', lodash.get(body, 'unit1'))
-        // lodash.set(patch, 'addresses.0.brgyDistrict', lodash.get(body, 'brgyDistrict1'))
-        // lodash.set(patch, 'addresses.0.cityMun', lodash.get(body, 'cityMun1'))
-        // lodash.set(patch, 'addresses.0.province', lodash.get(body, 'province1'))
-        // lodash.set(patch, 'addresses.0.region', lodash.get(body, 'region1'))
-        // lodash.set(patch, 'addresses.1._id', db.mongoose.Types.ObjectId())
-        // lodash.set(patch, 'addresses.1.unit', lodash.get(body, 'unit2'))
-        // lodash.set(patch, 'addresses.1.brgyDistrict', lodash.get(body, 'brgyDistrict2'))
-        // lodash.set(patch, 'addresses.1.cityMun', lodash.get(body, 'cityMun2'))
-        // lodash.set(patch, 'addresses.1.province', lodash.get(body, 'province2'))
-        // lodash.set(patch, 'addresses.1.region', lodash.get(body, 'region2'))
-        // lodash.set(patch, 'addressPermanent', lodash.get(patch, 'addresses.0._id'))
-        // lodash.set(patch, 'addressPresent', lodash.get(patch, 'addresses.1._id'))
-        // if(body.addressSame === 'true'){
-        //     patch.addresses.splice(1,1) // Remove second array
-        //     lodash.set(patch, 'addressPresent', lodash.get(patch, 'addresses.0._id'))
-        // }
-
+        
         // TODO: Check duplicate
 
         let person = new db.main.Person(patch)
@@ -183,10 +151,18 @@ router.post('/resident/address/:personId', middlewares.guardRoute(['create_resid
             throw new Error('Invalid address.')
         }
         
+        
         lodash.set(patch, 'addresses.0._id', db.mongoose.Types.ObjectId())
         lodash.set(patch, 'addresses.0.unit', lodash.get(body, 'unit'))
         lodash.set(patch, 'addresses.0.psgc', lodash.get(body, 'psgc'))
         lodash.set(patch, 'addressPermanent', lodash.get(patch, 'addresses.0._id'))
+        let address = await db.main.Address.findOne({
+            code: lodash.get(body, 'psgc', '')
+        })
+        if(address){
+            lodash.set(patch, 'addresses.0.full', lodash.get(address, 'full'))
+            lodash.set(patch, 'address', lodash.get(address, 'full'))
+        }
 
         lodash.merge(person, patch)
         await person.save()

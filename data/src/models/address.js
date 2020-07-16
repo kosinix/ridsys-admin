@@ -41,6 +41,10 @@ const schema = new Schema({
         $type: String,
         trim: true,
     },
+    full : {
+        $type: String,
+        trim: true,
+    },
 }, {timestamps: false, typeKey: '$type'})
 
 //// Instance methods

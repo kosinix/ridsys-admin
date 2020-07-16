@@ -74,6 +74,10 @@ const schema = new Schema({
     addressPermanent: {
         $type: mongoose.Schema.Types.ObjectId,
     },
+    address: {
+        $type: String,
+        trim: true,
+    },
     addresses: [
         {
             unit: {
@@ -81,6 +85,10 @@ const schema = new Schema({
                 trim: true,
             },
             psgc: {
+                $type: String,
+                trim: true,
+            },
+            full: {
                 $type: String,
                 trim: true,
             },
@@ -180,7 +188,6 @@ const schema = new Schema({
 //// Virtuals
 schema.virtual('addressPsgc').get(function() {
     let me = this
-    let address = []
     let permanentAddress = lodash.find(this.addresses, (o) => {
         return o._id.toString() === me.addressPermanent.toString()
     })
@@ -188,7 +195,6 @@ schema.virtual('addressPsgc').get(function() {
         return ''
     }
 
-    // Unit
     return permanentAddress.psgc
 });
 
@@ -205,7 +211,11 @@ schema.virtual('addressUnit').get(function() {
     return permanentAddress.unit
 });
 
+
 //// Schema methods
+
+
+//// Middlewares
 schema.pre('save', function (next) {
     if(!this.uuid){
         this.uuid = uuid.v4()
@@ -215,7 +225,5 @@ schema.pre('save', function (next) {
     }
     next();
 });
-
-//// Middlewares
 
 module.exports = schema

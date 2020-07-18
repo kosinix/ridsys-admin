@@ -17,6 +17,10 @@
         {% set name = 'name' %}
         {% include 'parts/form-group-text.html' %}
 
+        {% set name = 'type' %}
+        {% set options = [{value:'bldg', text:'Building'}, {value:'pharma', text:'Pharmacy'}, {value:'prov', text:'Province'}, {value:'Others', text:'Others'}] %}
+        {% include 'parts/form-group-select.html' %}
+
         <div class="form-row pt-3 pb-3">
             <div class="col-md-12">
                 <button class="btn btn-primary">Add</button>
@@ -37,9 +41,13 @@
         ],
         data: {
             name: '',
+            type: '',
         },
         validations: {
             name: {
+                required: window.validators.required
+            },
+            type: {
                 required: window.validators.required
             },
         },

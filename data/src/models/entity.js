@@ -10,6 +10,10 @@ let schema = mongoose.Schema({
         $type: String,
         trim: true,
     },
+    type: {
+        $type: String,
+        trim: true,
+    },
 }, {timestamps: true, typeKey: '$type'})
 
 //// Instance methods

@@ -1,4 +1,4 @@
-<form id="form" action="/resident/all">
+<form id="form" action="{{url}}">
     <select onchange="document.getElementById('form').submit()" name="perPage" id="perPage" class="form-control">
         <option value=""></option>
         <option {% if pagination.perPage == 1 %}selected{% endif %} value="1">1</option>

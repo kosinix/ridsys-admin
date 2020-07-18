@@ -22,16 +22,8 @@
 
         <div class="d-flex justify-content-end">
             <div class=" pb-3">
-                <form id="form" action="/entity/all">
-                    <select onchange="document.getElementById('form').submit()" name="perPage" id="perPage" class="form-control">
-                        <option {% if query.perPage == 1 %}selected{% endif %} value="1">1</option>
-                        <option {% if query.perPage == 2 %}selected{% endif %} value="2">2</option>
-                        <option {% if query.perPage == 5 %}selected{% endif %} value="5">5</option>
-                        <option {% if query.perPage == 10 %}selected{% endif %} value="10">10</option>
-                        <option {% if query.perPage == 20 %}selected{% endif %} value="20">20</option>
-                        <option {% if query.perPage == 50 %}selected{% endif %} value="50">50</option>
-                    </select>
-                </form>
+                {% set url = '/entity/all' %}
+                {% include 'parts/form-per-page.html' %}
             </div>
         </div>
         <div class="table-responsive">

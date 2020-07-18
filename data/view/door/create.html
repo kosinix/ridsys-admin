@@ -4,7 +4,7 @@
 <div class="col-md-12">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <div class="d-flex align-items-start">
-            <h1 class="h3">Add Door</h1>
+            <h1 class="h3">Add</h1>
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
@@ -12,10 +12,15 @@
             </div>
         </div>
     </div>
-    <form ref="form" id="vApp" v-cloak v-on:submit.prevent="onSubmit" action="/door/create" method="POST" class="form-default">
+    <form ref="form" id="vApp" v-cloak v-on:submit.prevent="onSubmit" action="/door/create/{{entity._id}}" method="POST" class="form-default">
         <h3>Access Point Info</h3>
+
         {% set name = 'name' %}
         {% include 'parts/form-group-text.html' %}
+
+        {% set name = 'type' %}
+        {% set options = [{value:'1', text:'Entrance'}, {value:'0', text:'Exit'}, {value:'2', text:'Others'}] %}
+        {% include 'parts/form-group-select.html' %}
 
         <div class="form-row pt-3 pb-3">
             <div class="col-md-12">
@@ -37,9 +42,13 @@
         ],
         data: {
             name: '',
+            type: '',
         },
         validations: {
             name: {
+                required: window.validators.required
+            },
+            type: {
                 required: window.validators.required
             },
         },

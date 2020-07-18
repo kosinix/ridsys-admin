@@ -6,7 +6,7 @@
 
     <div class="tab-content pt-3 pb-2 pl-3 pr-2">
         <form ref="form" id="vApp" v-cloak v-on:submit.prevent="onSubmit" action="/entity/{{entity._id}}" method="POST" class="form-default">
-            <h3>Entity Info</h3>
+            <h3>Access Point - {{door.name}} </h3>
             {% set name = 'name' %}
             {% include 'parts/form-group-text.html' %}
 
@@ -31,7 +31,7 @@
             window.vuelidateExtendMixin,
         ],
         data: {
-            name: '{{entity.name}}',
+            name: '{{door.name}}',
         },
         validations: {
             name: {

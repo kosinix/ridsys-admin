@@ -188,6 +188,19 @@ module.exports = {
             next(err);
         }
     },
+    getDoor: async (req, res, next) => {
+        try {
+            let doorId = req.params.doorId || "";
+            let door = await db.main.Door.findById(doorId);
+            if (!door) {
+                return res.render('error.html', { error: "Sorry, door not found." })
+            }
+            res.door = door
+            next();
+        } catch (err) {
+            next(err);
+        }
+    },
     getPerson: async (req, res, next) => {
         try {
             let personId = req.params.personId || "";

@@ -21,6 +21,10 @@ let schema = mongoose.Schema({
         $type: String,
         trim: true,
     },
+    type: {
+        $type: String,
+        trim: true,
+    },
     passwordHash: {
         $type: String,
         trim: true,

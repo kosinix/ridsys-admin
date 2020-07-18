@@ -27,6 +27,7 @@ main.App = main.model('App', require('./models/app'));
 main.Application = main.model('Application', require('./models/application'));
 main.Door = main.model('Door', require('./models/door'));
 main.Entity = main.model('Entity', require('./models/entity'));
+main.Log = main.model('Log', require('./models/log'));
 main.Login = main.model('Login', require('./models/login'));
 main.Pass = main.model('Pass', require('./models/pass'));
 main.Permission = main.model('Permission', require('./models/permission'));

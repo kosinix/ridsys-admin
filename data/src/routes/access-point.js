@@ -77,7 +77,9 @@ router.get('/access-point/logout', async (req, res, next) => {
 
 router.get('/access-point', middlewares.requireAuthDoor, async (req, res, next) => {
     try {
-        res.render('access-point/index.html')
+        res.render('access-point/index.html', {
+            door: res.authDoor
+        })
     } catch (err) {
         next(err);
     }
@@ -99,23 +101,10 @@ router.get('/access-point/find', middlewares.requireAuthDoor, async (req, res, n
         let log = new db.main.Log({
             personId: person._id,
             doorId: authDoor._id,
-            inside: true,
-            timeIn: new Date()
+            type: authDoor.type,
+            scanAt: new Date()
         })
-
-        let prevLog = await db.main.Log.findOne({
-            personId: person._id,
-            doorId: authDoor._id,
-        }).sort({createdAt: -1})
-
-        if(prevLog){
-            if(prevLog.inside){
-                prevLog.inside = false
-                prevLog.timeOut = new Date()
-                log = prevLog
-            }
-        }
-
+       
         await log.save()
 
         res.render('access-point/check-in.html',{

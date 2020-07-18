@@ -2,27 +2,68 @@
 
 {% block body %}
 <div class="col-md-12">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div class="d-flex align-items-start">
+            <div class="pt-2">
+                <button class="toggler mr-2">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+            <div>
+                <h1>{{entity.name}}</h1>
+            </div>
+        </div>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group mr-2">
+                <a href="/entity/all" class="btn btn-sm btn-outline-primary">Back</a>
+            </div>
+        </div>
+    </div>
+
     {% include 'parts/flash.html' %}
 
-    <div class="tab-content pt-3 pb-2 pl-3 pr-2">
-        <form ref="form" id="vApp" v-cloak v-on:submit.prevent="onSubmit" action="/entity/{{entity._id}}" method="POST" class="form-default">
-            <h3>Entity Info</h3>
-            {% set name = 'name' %}
-            {% include 'parts/form-group-text.html' %}
+    <a class="btn btn-primary" href="/door/create/{{entity._id}}">Add Access Point</a>
 
-            {% for door in entity.doors %}
-            <div>{{door.name}}</div>
-            {% endfor %}
-
-            <a href="/entity/{{entity._id}}/door/create" class="btn btn-primary">Add Access Point</a>
-
-            <div class="form-row pt-3 pb-3">
-                <div class="col-md-12">
-                    <button class="btn btn-primary">Save</button>
-                </div>
+    {% set doors = entity.doors %}
+    {% if doors.length <= 0 %}
+        
+    {% else %}
+        <div class="d-flex justify-content-end">
+            <div class=" pb-3">
+                {% include 'parts/form-per-page.html' %}
             </div>
-        </form>
-    </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                            {% set thId = 'name' %}
+                            {% include 'parts/sorted-th.html' %}
+                        </th>
+                        <th>Access Point ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for door in doors %}
+                    <tr>
+                        <td><a href="/door/{{door._id}}">{{door.name}}</a></td>
+                        <td>{{door.uid}}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+            <div class="col-md-6 text-center text-md-left">
+            </div>
+            <div class="col-md-6 text-center text-md-right">
+                {% include "parts/pagination.html" %}
+            </div>
+        </div>
+    {% endif %}
 
 </div>
 {% endblock %}

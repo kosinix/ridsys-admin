@@ -14,15 +14,13 @@ let schema = mongoose.Schema({
     personId: {
         $type: mongoose.Schema.Types.ObjectId
     },
-    inside: {
-        $type: Boolean,
+    type: {
+        $type: Number,
     },
-    timeIn: {
+    scanAt: {
         $type: Date,
     },
-    timeOut: {
-        $type: Date,
-    },
+   
 }, {timestamps: {createdAt: true, updatedAt: false}, typeKey: '$type', versionKey: false})
 
 //// Instance methods

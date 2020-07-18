@@ -1,20 +1,16 @@
 //// Core modules
-const fs = require('fs')
 
 //// External modules
 const express = require('express')
-const fileUpload = require('express-fileupload')
 const flash = require('kisapmata')
-const phAddress = require('ph-address')
 const lodash = require('lodash')
-const moment = require('moment')
-const qr = require('qr-image')
 
 //// Modules
 const db = require('../db');
 const middlewares = require('../middlewares');
 const paginator = require('../paginator');
-const s3 = require('../aws-s3');
+const passwordMan = require('../password-man');
+
 
 // Router
 let router = express.Router()
@@ -70,54 +66,52 @@ router.get('/door/all', middlewares.guardRoute(['read_all_door', 'read_door']), 
     }
 });
 
-router.get('/door/create', middlewares.guardRoute(['create_door']), async (req, res, next) => {
+router.get('/door/create/:entityId', middlewares.guardRoute(['create_door']), middlewares.getEntity, async (req, res, next) => {
     try {
 
         res.render('door/create.html', {
+            entity: res.entity
         });
     } catch (err) {
         next(err);
     }
 });
-router.post('/door/create', middlewares.guardRoute(['create_door']), async (req, res, next) => {
+router.post('/door/create/:entityId', middlewares.guardRoute(['create_door']), middlewares.getEntity, async (req, res, next) => {
     try {
+        let entity = res.entity
         let body = req.body
         let patch = {}
-        lodash.set(patch, 'firstName', lodash.get(body, 'firstName'))
-        lodash.set(patch, 'middleName', lodash.get(body, 'middleName'))
-        lodash.set(patch, 'lastName', lodash.get(body, 'lastName'))
-        lodash.set(patch, 'suffix', lodash.get(body, 'suffix'))
-        lodash.set(patch, 'birthDate', lodash.get(body, 'birthDate'))
-        lodash.set(patch, 'gender', lodash.get(body, 'gender'))
-        // lodash.set(patch, 'addresses.0._id', db.mongoose.Types.ObjectId())
-        // lodash.set(patch, 'addresses.0.unit', lodash.get(body, 'unit1'))
-        // lodash.set(patch, 'addresses.0.brgyDistrict', lodash.get(body, 'brgyDistrict1'))
-        // lodash.set(patch, 'addresses.0.cityMun', lodash.get(body, 'cityMun1'))
-        // lodash.set(patch, 'addresses.0.province', lodash.get(body, 'province1'))
-        // lodash.set(patch, 'addresses.0.region', lodash.get(body, 'region1'))
-        // lodash.set(patch, 'addresses.1._id', db.mongoose.Types.ObjectId())
-        // lodash.set(patch, 'addresses.1.unit', lodash.get(body, 'unit2'))
-        // lodash.set(patch, 'addresses.1.brgyDistrict', lodash.get(body, 'brgyDistrict2'))
-        // lodash.set(patch, 'addresses.1.cityMun', lodash.get(body, 'cityMun2'))
-        // lodash.set(patch, 'addresses.1.province', lodash.get(body, 'province2'))
-        // lodash.set(patch, 'addresses.1.region', lodash.get(body, 'region2'))
-        // lodash.set(patch, 'addressPermanent', lodash.get(patch, 'addresses.0._id'))
-        // lodash.set(patch, 'addressPresent', lodash.get(patch, 'addresses.1._id'))
-        // if(body.addressSame === 'true'){
-        //     patch.addresses.splice(1,1) // Remove second array
-        //     lodash.set(patch, 'addressPresent', lodash.get(patch, 'addresses.0._id'))
-        // }
 
-        // TODO: Check duplicate
+        let password = passwordMan.randomString(8)
+        let salt = passwordMan.randomString(16)
+        let passwordHash = passwordMan.hashPassword(password, salt)
 
-        let person = new db.main.Person(patch)
-        await person.save()
-        flash.ok(req, 'door', `Added ${person.firstName} ${person.lastName}.`)
-        res.redirect(`/door/address/${person._id}`)
+        lodash.set(patch, 'entityId', lodash.get(entity, '_id'))
+        lodash.set(patch, 'name', lodash.get(body, 'name'))
+        lodash.set(patch, 'type', lodash.get(body, 'type'))
+        lodash.set(patch, 'passwordHash', passwordHash)
+        lodash.set(patch, 'salt', salt)
+
+        let door = new db.main.Door(patch)
+        await door.save()
+
+        flash.ok(req, 'entity', `Added ${door.name}. ID is "${door.uid}" and password is "${password}". You will only see your password once so please save it in a secure place.`)
+
+        res.redirect(`/entity/${entity._id}`)
     } catch (err) {
         next(err);
     }
 });
 
+router.get('/door/:doorId', middlewares.guardRoute(['read_door']), middlewares.getDoor, async (req, res, next) => {
+    try {
+
+        res.render('door/read.html', {
+            door: res.door
+        });
+    } catch (err) {
+        next(err);
+    }
+});
 
 module.exports = router;

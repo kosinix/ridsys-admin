@@ -2,13 +2,9 @@
 
 {% block body %}
 <div class="col-md-12">
-
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <div class="d-flex align-items-start">
-            <div class="pt-2">
-                {% include 'parts/btn-toggle.html' %}
-            </div>
-            <h1 class="h2 ml-2">Residents</h1>
+            <h1 class="h2">All Residents</h1>
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
@@ -23,6 +19,7 @@
 
         <div class="d-flex justify-content-end">
             <div class=" pb-3">
+                {% set url = '/resident/all' %}
                 {% include 'parts/form-per-page.html' %}
             </div>
         </div>

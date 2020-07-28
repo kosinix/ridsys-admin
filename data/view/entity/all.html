@@ -34,6 +34,7 @@
                             {% set thId = 'name' %}
                             {% include 'parts/sorted-th.html' %}
                         </th>
+                        <th>Type</th>
                         <th>Doors</th>
                     </tr>
                 </thead>
@@ -41,6 +42,7 @@
                 {% for entity in entities %}
                     <tr>
                         <td><a href="/entity/{{entity._id}}">{{entity.name}}</a></td>
+                        <td><a href="/entity/{{entity._id}}">{{entity.type}}</a></td>
                         <td><a href="/entity/{{entity._id}}">{{entity.doors.length}}</a></td>
                     </tr>
                 {% endfor %}

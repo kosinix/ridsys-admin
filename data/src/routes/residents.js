@@ -83,6 +83,14 @@ router.post('/resident/create', middlewares.guardRoute(['create_resident']), asy
         lodash.set(patch, 'gender', lodash.get(body, 'gender'))
         
         // TODO: Check duplicate
+        let matches = await db.main.Person.find({
+            firstName: patch.firstName,
+            middleName: patch.middleName,
+            lastName: patch.lastName,
+        })
+        if(matches.length > 0){
+            throw new Error("Dupe")
+        }
 
         let person = new db.main.Person(patch)
         await person.save()

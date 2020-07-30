@@ -52,7 +52,7 @@
             </a>
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link {{urlPath|active_class([r/^\/entity\/all/])}}" href="/entity/all">
+                    <a class="nav-link {{urlPath|active_class([r/^\/entity\/all/, r/^\/entity\/([a-f\d]{24})/])}}" href="/entity/all">
                         All Entities
                     </a>
                 </li>
@@ -62,7 +62,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{urlPath|active_class([r/^\/door\/all/])}}" href="/door/all">
+                    <a class="nav-link {{urlPath|active_class([r/^\/door\/all/, r/^\/door\//])}}" href="/door/all">
                         Access Points
                     </a>
                 </li>

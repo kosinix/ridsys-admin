@@ -114,4 +114,40 @@ router.get('/door/:doorId', middlewares.guardRoute(['read_door']), middlewares.g
     }
 });
 
+router.get('/door/:doorId/code', middlewares.guardRoute(['read_door']), middlewares.getDoor, async (req, res, next) => {
+    try {
+
+        res.render('door/code.html', {
+            flash: flash.get(req, 'door'),
+            door: res.door
+        });
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.post('/door/:doorId/code', middlewares.guardRoute(['read_door']), middlewares.getDoor, async (req, res, next) => {
+    try {
+
+        let door = res.door
+
+        let patch = {}
+
+        let password = passwordMan.randomString(8)
+        let salt = door.salt
+        let passwordHash = passwordMan.hashPassword(password, salt)
+
+        lodash.set(patch, 'passwordHash', passwordHash)
+
+        lodash.merge(door, patch)
+        await door.save()
+
+        flash.ok(req, 'door', `Reset access code for ${door.name}. ID is "${door.uid}" and password is "${password}". You will only see your password once so please save it in a secure place.`)
+
+        res.redirect(`/door/${res.door._id}`)
+    } catch (err) {
+        next(err);
+    }
+});
+
 module.exports = router;

@@ -40,6 +40,10 @@
                             {% include 'parts/sorted-th.html' %}
                         </th>
                         <th>
+                            {% set thId = 'type' %}
+                            {% include 'parts/sorted-th.html' %}
+                        </th>
+                        <th>
                             {% set thId = 'uid' %}
                             {% include 'parts/sorted-th.html' %}
                         </th>
@@ -48,8 +52,9 @@
                 <tbody>
                 {% for door in doors %}
                     <tr>
-                        <td>{{door.name}}</td>
-                        <td><a href="/entity/{{entity._id}}">{{door.entity.name}}</a></td>
+                        <td><a href="/door/{{door._id}}">{{door.name}}</a></td>
+                        <td><a href="/entity/{{door.entityId}}">{{door.entity.name}}</a></td>
+                        <td>{% if door.type === 1 %}Entrance{% elif door.type === 2 %}Exit{% endif %}</td>
                         <td>{{door.uid}}</td>
                     </tr>
                 {% endfor %}

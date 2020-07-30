@@ -4,16 +4,7 @@
 <div class="col-md-12">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <div class="d-flex align-items-start">
-            <div class="pt-2">
-                <button class="toggler mr-2">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-            </div>
-            <div>
-                <h1>{{entity.name}}</h1>
-            </div>
+            <h1 class="h2">{{entity.name}}</h1>
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
@@ -21,7 +12,6 @@
             </div>
         </div>
     </div>
-
     {% include 'parts/flash.html' %}
 
     <a class="btn btn-primary" href="/door/create/{{entity._id}}">Add Access Point</a>
@@ -36,6 +26,7 @@
             </div>
         </div>
         <div class="table-responsive">
+            <h2 class="h6">Access Points</h2>
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -43,13 +34,21 @@
                             {% set thId = 'name' %}
                             {% include 'parts/sorted-th.html' %}
                         </th>
-                        <th>Access Point ID</th>
+                        <th>
+                            {% set thId = 'type' %}
+                            {% include 'parts/sorted-th.html' %}
+                        </th>
+                        <th>
+                            {% set thId = 'uid' %}
+                            {% include 'parts/sorted-th.html' %}
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                 {% for door in doors %}
                     <tr>
                         <td><a href="/door/{{door._id}}">{{door.name}}</a></td>
+                        <td>{% if door.type === 1 %}Entrance{% elif door.type === 2 %}Exit{% endif %}</td>
                         <td>{{door.uid}}</td>
                     </tr>
                 {% endfor %}

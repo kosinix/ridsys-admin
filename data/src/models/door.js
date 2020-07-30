@@ -22,8 +22,8 @@ let schema = mongoose.Schema({
         trim: true,
     },
     type: {
-        $type: String,
-        trim: true,
+        $type: Number,
+        enum: [1, 2]
     },
     passwordHash: {
         $type: String,
@@ -37,7 +37,7 @@ let schema = mongoose.Schema({
         $type: Boolean,
         default: true
     }
-}, {timestamps: true, typeKey: '$type'})
+}, { timestamps: true, typeKey: '$type' })
 
 //// Instance methods
 
@@ -47,10 +47,10 @@ let schema = mongoose.Schema({
 
 //// Middlewares
 schema.pre('save', function (next) {
-    if(!this.uuid){
+    if (!this.uuid) {
         this.uuid = uuid.v4()
     }
-    if(!this.uid){
+    if (!this.uid) {
         this.uid = uid.gen(8)
     }
     next();

@@ -13,12 +13,10 @@
                     <button v-on:click.prevent="onCancel" v-if="!hideCancel" class="btn btn-danger" type="button">Cancel Return</button>
                     <a v-if="hideCancel" class="btn btn-success" href="/access-point">Return to scanner</a>
                 </div>
-                {% if log.inside %}
-                <div class="alert alert-warning text-left">You have entered the building {{log.timeIn|from_now}} <br>Time-in: {{log.timeIn|format_date("hh:mm:ss A")}}.</div>
+                {% if log.type === 1 %}
+                <div class="alert alert-warning text-left">You have checked-in {{log.timeIn|from_now}} <br>Time-in: {{log.scanAt|format_date("hh:mm:ss A")}}.</div>
                 {% else %}
-                <div class="alert alert-success text-left">You have exited the building {{log.timeOut|from_now}}
-                    <br>Time-in: {{log.timeIn|format_date("hh:mm:ss A")}}.
-                    <br>Time-out: {{log.timeOut|format_date("hh:mm:ss A")}}.</div>
+                <div class="alert alert-success text-left">You have checked-out {{log.timeOut|from_now}} <br>Time-out: {{log.scanAt|format_date("hh:mm:ss A")}}</div>
                 {% endif %}
                 <div class="profile-photo">
                     {% if person.profilePhoto %}

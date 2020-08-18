@@ -1,0 +1,19 @@
+{% extends "document.html" %}
+
+{% block body %}
+<div class="col-md-12">
+    {% include 'parts/flash.html' %}
+    {% set pageTitle = 'Reports' %}
+    {% include 'parts/header-main.html' %}
+
+    <div class="d-flex">
+        <div>
+            <h2 class="h6">Access Points</h2>
+        </div>
+        <div>
+            <h2 class="h6">Entity</h2>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -8,19 +8,27 @@ const uuid = require('uuid');
 const uid = require('../uid');
 
 let schema = mongoose.Schema({
-    doorId: {
-        $type: mongoose.Schema.Types.ObjectId
-    },
     personId: {
         $type: mongoose.Schema.Types.ObjectId
     },
-    type: {
-        $type: Number,
+    entityId: {
+        $type: mongoose.Schema.Types.ObjectId
     },
-    scanAt: {
+    inside: {
+        $type: Boolean
+    },
+    enteredOn: {
+        $type: mongoose.Schema.Types.ObjectId
+    },
+    exitedOn: {
+        $type: mongoose.Schema.Types.ObjectId
+    },
+    enteredAt: {
         $type: Date,
     },
-   
+    exitedAt: {
+        $type: Date,
+    },
 }, {timestamps: {createdAt: true, updatedAt: false}, typeKey: '$type', versionKey: false})
 
 //// Instance methods

@@ -98,14 +98,59 @@ router.get('/access-point/find', middlewares.requireAuthDoor, async (req, res, n
             throw new Error('Person not found.')
         }
 
-        let log = new db.main.Log({
+
+        if(authDoor.type === 1) { // Entrance
+            // Check if already entered 
+            let entered = await db.main.Log.findOne({
+                personId: person._id,
+                entityId: authDoor.entityId,
+                inside: true,
+            })
+            if(entered){
+                throw new Error('Person already entered.')
+            }
+
+        } else if(authDoor.type === 2) { // Exit
+            // Check if already exited
+            let exited = await db.main.Log.findOne({
+                personId: person._id,
+                entityId: authDoor.entityId,
+                inside: false,
+            })
+            if(exited){
+                throw new Error('Person already exited.')
+            }
+        } else { 
+            throw new Error(`Invalid door type "${authDoor.type}".`)
+        }
+
+        // check if entered or exit
+        let log = await db.main.Log.findOne({
             personId: person._id,
-            doorId: authDoor._id,
-            type: authDoor.type,
-            scanAt: new Date()
-        })
-       
-        await log.save()
+            entityId: authDoor.entityId,
+            enteredAt: {
+                $ne: null
+            },
+            exitedAt: null
+        }).sort({_id:-1})
+        if(!log){
+            log = new db.main.Log({
+                personId: person._id,
+                entityId: authDoor.entityId,
+                inside: true,
+                enteredOn: authDoor._id,
+                enteredAt: new Date(),
+            })
+            await log.save()
+
+        } else {
+            log.exitedOn = authDoor._id
+            log.exitedAt = new Date()
+            log.inside = false
+            await log.save()
+
+        }
+        
 
         res.render('access-point/check-in.html',{
             authDoor: authDoor.toObject(),

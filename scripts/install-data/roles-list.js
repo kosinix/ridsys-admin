@@ -30,14 +30,15 @@ const ROLES = [
         ]
     },
     {
-        key: 'border',
-        name: 'Border Officer',
-        description: 'Can create, read outbound pass.',
+        key: 'checker',
+        name: 'Scanner Officer',
+        description: 'Operate scanners and verify users.',
         permissions: [
-            'read_all_pass',
-            'create_pass',
-            'read_pass',
-            'read_resident',
+            'read_all_scanner',
+            'create_scanner',
+            'read_scanner',
+            'update_scanner',
+            'delete_scanner',
         ]
     }
 ]

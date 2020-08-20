@@ -3,14 +3,14 @@
 {% block body %}
 <div class="col-md-4 col-sm-6 col-lg-3 ml-auto mr-auto pt-5 mt-5">
     <div id="vApp" v-cloak>
-        <form ref="form" v-on:submit.prevent="onSubmit" action="/access-point/login" method="POST" class="form-login" novalidate>
+        <form ref="form" v-on:submit.prevent="onSubmit" action="/scanner-app/login" method="POST" class="form-login" novalidate>
             <div class="form-header">
-                <h1 class="h6 mb-0">Access Point Scanner Login</h1>
+                <h1 class="h6 mb-0">Scanner Login</h1>
             </div>
             <div class="form-body">
                 {% include 'parts/flash.html' %}
                 <div class="form-group">
-                    <label for="username">Access Point ID</label>
+                    <label for="username">Scanner ID</label>
                     <input v-model="username" id="username" type="number" name="username" class="form-control">
                     <small class="invalid-feedback">${getError('username')}</small>
                 </div>

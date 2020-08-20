@@ -8,12 +8,12 @@
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
-                <a href="/door/all" class="btn btn-sm btn-outline-primary">Back</a>
+                <a href="/scanner/all" class="btn btn-sm btn-outline-primary">Back</a>
             </div>
         </div>
     </div>
-    <form ref="form" id="vApp" v-cloak v-on:submit.prevent="onSubmit" action="/door/create/{{entity._id}}" method="POST" class="form-default">
-        <h3>Access Point Info</h3>
+    <form ref="form" id="vApp" v-cloak v-on:submit.prevent="onSubmit" action="/scanner/create/{{entity._id}}" method="POST" class="form-default">
+        <h3>Scanner Settings</h3>
 
         {% set name = 'name' %}
         {% include 'parts/form-group-text.html' %}

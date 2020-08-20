@@ -15,12 +15,12 @@ const passwordMan = require('../password-man');
 // Router
 let router = express.Router()
 
-router.use('/door', middlewares.requireAuthUser )
+router.use('/scanner', middlewares.requireAuthUser )
 
-router.get('/door/all', middlewares.guardRoute(['read_all_door', 'read_door']), async (req, res, next) => {
+router.get('/scanner/all', middlewares.guardRoute(['read_all_scanner', 'read_scanner']), async (req, res, next) => {
     try {
         let page = parseInt(lodash.get(req, 'query.page', 1))
-        let perPage = parseInt(lodash.get(req, 'query.perPage', 1))
+        let perPage = parseInt(lodash.get(req, 'query.perPage', 10))
         let sortBy = lodash.get(req, 'query.sortBy', '_id')
         let sortOrder = parseInt(lodash.get(req, 'query.sortOrder', 1))
         let customSort = parseInt(lodash.get(req, 'query.customSort'))
@@ -29,12 +29,12 @@ router.get('/door/all', middlewares.guardRoute(['read_all_door', 'read_door']), 
         let projection = {}
 
         // Pagination
-        let totalDocs = await db.main.Door.countDocuments(query)
+        let totalDocs = await db.main.Scanner.countDocuments(query)
         let pagination = paginator.paginate(
             page,
             totalDocs,
             perPage,
-            '/door/all',
+            '/scanner/all',
             req.query
         )
 
@@ -44,20 +44,20 @@ router.get('/door/all', middlewares.guardRoute(['read_all_door', 'read_door']), 
 
         console.log(query, projection, options, sort)
 
-        let doors = await db.main.Door.find(query, projection, options).sort(sort).lean()
+        let scanners = await db.main.Scanner.find(query, projection, options).sort(sort).lean()
 
         let entities = []
-        doors.forEach((door)=>{
-            entities.push(db.main.Entity.findById(door.entityId))
+        scanners.forEach((scanner)=>{
+            entities.push(db.main.Entity.findById(scanner.entityId))
         })
         entities = await Promise.all(entities)
-        doors.forEach((door, i)=>{
-            door.entity = entities[i]
+        scanners.forEach((scanner, i)=>{
+            scanner.entity = entities[i]
         })
 
-        res.render('door/all.html', {
-            flash: flash.get(req, 'door'),
-            doors: doors,
+        res.render('scanner/all.html', {
+            flash: flash.get(req, 'scanner'),
+            scanners: scanners,
             pagination: pagination,
             query: req.query,
         });
@@ -66,17 +66,17 @@ router.get('/door/all', middlewares.guardRoute(['read_all_door', 'read_door']), 
     }
 });
 
-router.get('/door/create/:entityId', middlewares.guardRoute(['create_door']), middlewares.getEntity, async (req, res, next) => {
+router.get('/scanner/create/:entityId', middlewares.guardRoute(['create_scanner']), middlewares.getEntity, async (req, res, next) => {
     try {
 
-        res.render('door/create.html', {
+        res.render('scanner/create.html', {
             entity: res.entity
         });
     } catch (err) {
         next(err);
     }
 });
-router.post('/door/create/:entityId', middlewares.guardRoute(['create_door']), middlewares.getEntity, async (req, res, next) => {
+router.post('/scanner/create/:entityId', middlewares.guardRoute(['create_scanner']), middlewares.getEntity, async (req, res, next) => {
     try {
         let entity = res.entity
         let body = req.body
@@ -92,10 +92,10 @@ router.post('/door/create/:entityId', middlewares.guardRoute(['create_door']), m
         lodash.set(patch, 'passwordHash', passwordHash)
         lodash.set(patch, 'salt', salt)
 
-        let door = new db.main.Door(patch)
-        await door.save()
+        let scanner = new db.main.Scanner(patch)
+        await scanner.save()
 
-        flash.ok(req, 'entity', `Added ${door.name}. ID is "${door.uid}" and password is "${password}". You will only see your password once so please save it in a secure place.`)
+        flash.ok(req, 'entity', `Added ${scanner.name}. ID is "${scanner.uid}" and password is "${password}". You will only see your password once so please save it in a secure place.`)
 
         res.redirect(`/entity/${entity._id}`)
     } catch (err) {
@@ -103,48 +103,48 @@ router.post('/door/create/:entityId', middlewares.guardRoute(['create_door']), m
     }
 });
 
-router.get('/door/:doorId', middlewares.guardRoute(['read_door']), middlewares.getDoor, async (req, res, next) => {
+router.get('/scanner/:scannerId', middlewares.guardRoute(['read_scanner']), middlewares.getScanner, async (req, res, next) => {
     try {
 
-        res.render('door/read.html', {
-            door: res.door
+        res.render('scanner/read.html', {
+            flash: flash.get(req, 'scanner'),
+            scanner: res.scanner
         });
     } catch (err) {
         next(err);
     }
 });
 
-router.get('/door/:doorId/code', middlewares.guardRoute(['read_door']), middlewares.getDoor, async (req, res, next) => {
+router.get('/scanner/:scannerId/code', middlewares.guardRoute(['read_scanner']), middlewares.getScanner, async (req, res, next) => {
     try {
 
-        res.render('door/code.html', {
-            flash: flash.get(req, 'door'),
-            door: res.door
+        res.render('scanner/code.html', {
+            scanner: res.scanner
         });
     } catch (err) {
         next(err);
     }
 });
 
-router.post('/door/:doorId/code', middlewares.guardRoute(['read_door']), middlewares.getDoor, async (req, res, next) => {
+router.post('/scanner/:scannerId/code', middlewares.guardRoute(['read_scanner']), middlewares.getScanner, async (req, res, next) => {
     try {
 
-        let door = res.door
+        let scanner = res.scanner
 
         let patch = {}
 
         let password = passwordMan.randomString(8)
-        let salt = door.salt
+        let salt = scanner.salt
         let passwordHash = passwordMan.hashPassword(password, salt)
 
         lodash.set(patch, 'passwordHash', passwordHash)
 
-        lodash.merge(door, patch)
-        await door.save()
+        lodash.merge(scanner, patch)
+        await scanner.save()
 
-        flash.ok(req, 'door', `Reset access code for ${door.name}. ID is "${door.uid}" and password is "${password}". You will only see your password once so please save it in a secure place.`)
+        flash.ok(req, 'scanner', `Reset access code for ${scanner.name}. ID is "${scanner.uid}" and password is "${password}". You will only see your password once so please save it in a secure place.`)
 
-        res.redirect(`/door/${res.door._id}`)
+        res.redirect(`/scanner/${res.scanner._id}`)
     } catch (err) {
         next(err);
     }

@@ -3,12 +3,13 @@ const querystring = require('querystring');
 
 //// External modules
 const nunjucks = require('nunjucks');
+const nunjucksFilters = require('nunjucks-filters');
+
 const lodash = require('lodash');
 const moment = require('moment');
 const htmlEnDec = require('he');
 
 //// Modules
-const nunjucksFilters = require('./nunjucks-filters');
 
 
 let dirView = CONFIG.app.dirs.view; // Path to view directory

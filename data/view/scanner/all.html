@@ -8,22 +8,22 @@
             <div class="pt-2">
                 {% include 'parts/btn-toggle.html' %}
             </div>
-            <h1 class="h2 ml-2">Access Points</h1>
+            <h1 class="h2 ml-2">Scanners</h1>
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
-                <a href="/door/create" class="btn btn-sm btn-outline-primary">Add Door</a>
+                {# <a href="/scanner/create" class="btn btn-sm btn-outline-primary">Add Scanner</a> #}
             </div>
         </div>
     </div>
     {% include 'parts/flash.html' %}
-    {% if doors.length <= 0 %}
+    {% if scanners.length <= 0 %}
         <p>None found.</p>
     {% else %}
 
         <div class="d-flex justify-content-end">
             <div class=" pb-3">
-                {% set url = '/door/all' %}
+                {% set url = '/scanner/all' %}
                 {% include 'parts/form-per-page.html' %}
             </div>
         </div>
@@ -50,12 +50,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                {% for door in doors %}
+                {% for scanner in scanners %}
                     <tr>
-                        <td><a href="/door/{{door._id}}">{{door.name}}</a></td>
-                        <td><a href="/entity/{{door.entityId}}">{{door.entity.name}}</a></td>
-                        <td>{% if door.type === 1 %}Entrance{% elif door.type === 2 %}Exit{% endif %}</td>
-                        <td>{{door.uid}}</td>
+                        <td><a href="/scanner/{{scanner._id}}">{{scanner.name}}</a></td>
+                        <td><a href="/entity/{{scanner.entityId}}">{{scanner.entity.name}}</a></td>
+                        <td>{% if scanner.type === 1 %}Entrance{% elif scanner.type === 2 %}Exit{% endif %}</td>
+                        <td>{{scanner.uid}}</td>
                     </tr>
                 {% endfor %}
                 </tbody>

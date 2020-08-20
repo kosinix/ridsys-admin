@@ -45,13 +45,13 @@ router.get('/entity/all', middlewares.guardRoute(['read_all_entity', 'read_entit
 
         let entities = await db.main.Entity.find(query, projection, options).sort(sort).lean()
 
-        let doors = []
+        let scanners = []
         entities.forEach((entity) => {
-            doors.push(db.main.Door.find({ entityId: entity._id })) // return array of doors
+            scanners.push(db.main.Scanner.find({ entityId: entity._id })) // return array of scanners
         })
-        doors = await Promise.all(doors)
+        scanners = await Promise.all(scanners)
         entities.forEach((entity, i) => {
-            entity.doors = doors[i]
+            entity.scanners = scanners[i]
         })
 
         res.render('entity/all.html', {
@@ -94,7 +94,7 @@ router.get('/entity/:entityId', middlewares.getEntity, async (req, res, next) =>
     try {
         let entity = res.entity.toObject()
 
-        entity.doors = await db.main.Door.find({ entityId: entity._id });
+        entity.scanners = await db.main.Scanner.find({ entityId: entity._id });
 
         res.render('entity/read.html', {
             flash: flash.get(req, 'entity'),

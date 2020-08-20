@@ -14,10 +14,10 @@
     </div>
     {% include 'parts/flash.html' %}
 
-    <a class="btn btn-primary" href="/door/create/{{entity._id}}">Add Access Point</a>
+    <a class="btn btn-primary" href="/scanner/create/{{entity._id}}">Add Scanner</a>
 
-    {% set doors = entity.doors %}
-    {% if doors.length <= 0 %}
+    {% set scanners = entity.scanners %}
+    {% if scanners.length <= 0 %}
         
     {% else %}
         <div class="d-flex justify-content-end">
@@ -45,11 +45,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                {% for door in doors %}
+                {% for scanner in scanners %}
                     <tr>
-                        <td><a href="/door/{{door._id}}">{{door.name}}</a></td>
-                        <td>{% if door.type === 1 %}Entrance{% elif door.type === 2 %}Exit{% endif %}</td>
-                        <td>{{door.uid}}</td>
+                        <td><a href="/scanner/{{scanner._id}}">{{scanner.name}}</a></td>
+                        <td>{% if scanner.type === 1 %}Entrance{% elif scanner.type === 2 %}Exit{% endif %}</td>
+                        <td>{{scanner.uid}}</td>
                     </tr>
                 {% endfor %}
                 </tbody>

@@ -7,24 +7,28 @@
 
 module.exports = [
 
+    // Residents
     'read_all_resident',
     'create_resident',
     'read_resident',
     'update_resident',
     'delete_resident',
 
+    // Entities
     'read_all_entity',
     'create_entity',
     'read_entity',
     'update_entity',
     'delete_entity',
 
-    'read_all_door',
-    'create_door',
-    'read_door',
-    'update_door',
-    'delete_door',
+    // Scanners
+    'read_all_scanner',
+    'create_scanner',
+    'read_scanner',
+    'update_scanner',
+    'delete_scanner',
 
+    // Outbound Passes
     'read_all_pass',
     'create_pass',
     'read_pass',

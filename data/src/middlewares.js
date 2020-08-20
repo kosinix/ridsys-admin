@@ -98,17 +98,17 @@ let requireAuthUser = async (req, res, next) => {
     }
 }
 
-let requireAuthDoor = async (req, res, next) => {
+let requireAuthScanner = async (req, res, next) => {
     try {
-        let authDoorId = lodash.get(req, 'session.authDoorId');
-        if (!authDoorId) {
-            return res.redirect('/access-point/login')
+        let authScannerId = lodash.get(req, 'session.authScannerId');
+        if (!authScannerId) {
+            return res.redirect('/scanner-app/login')
         }
-        let authDoor = await db.main.Door.findById(authDoorId);
-        if (!authDoor) {
-            return res.redirect('/access-point/login')
+        let authScanner = await db.main.Scanner.findById(authScannerId);
+        if (!authScanner) {
+            return res.redirect('/scanner-app/login')
         }
-        res.authDoor = authDoor;
+        res.authScanner = authScanner;
         next();
     } catch (err) {
         next(err)
@@ -188,14 +188,14 @@ module.exports = {
             next(err);
         }
     },
-    getDoor: async (req, res, next) => {
+    getScanner: async (req, res, next) => {
         try {
-            let doorId = req.params.doorId || "";
-            let door = await db.main.Door.findById(doorId);
-            if (!door) {
-                return res.render('error.html', { error: "Sorry, door not found." })
+            let scannerId = req.params.scannerId || "";
+            let scanner = await db.main.Scanner.findById(scannerId);
+            if (!scanner) {
+                return res.render('error.html', { error: "Sorry, scanner not found." })
             }
-            res.door = door
+            res.scanner = scanner
             next();
         } catch (err) {
             next(err);
@@ -230,5 +230,5 @@ module.exports = {
     getUser: getUser,
     handleExpressUploadMagic: handleExpressUploadMagic,
     requireAuthUser: requireAuthUser,
-    requireAuthDoor: requireAuthDoor,
+    requireAuthScanner: requireAuthScanner,
 }

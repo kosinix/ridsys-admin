@@ -13,8 +13,8 @@ router.use(require('./routes/residents'));
 router.use(require('./routes/admin'));
 router.use(require('./routes/application'));
 router.use(require('./routes/entity'));
-router.use(require('./routes/door'));
-router.use(require('./routes/access-point'));
+router.use(require('./routes/scanner'));
+router.use(require('./routes/scanner-app'));
 
 // 404 Page
 router.use((req, res) => {

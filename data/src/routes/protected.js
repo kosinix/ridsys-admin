@@ -66,7 +66,7 @@ router.get('/file-viewer/:bucket/:prefix/:key', middlewares.requireAuthUser, asy
 });
 
 // Get s3 object content
-router.get('/file-getter/:bucket/:prefix/:key', middlewares.requireAuthUser, async (req, res, next) => {
+router.get('/file-getter/:bucket/:prefix/:key', async (req, res, next) => {
     try {
         let bucket = lodash.get(req, "params.bucket", "");
         let prefix = lodash.get(req, "params.prefix", "");

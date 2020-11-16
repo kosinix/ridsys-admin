@@ -141,7 +141,7 @@ h4, h5, h6 {
 
 .profile-photo {
     border: 1px solid #ccc;
-    border-radius: 100%;
+    border-radius: 2%;
     width: 200px;
     height: 200px;
     margin: 0 auto;
@@ -179,11 +179,43 @@ h4, h5, h6 {
 .id-card {
     background: #fff;
     box-shadow: 0 0 3px #ccc;
+    max-width:565px; 
+    border: 1px solid #ccc; 
+    border-radius: 5px; 
+    font-family: Verdana, sans-serif;
 }
 .id-card svg{
-    width: 200px !important;
-    height: 200px !important;
+    width: 150px !important;
+    height: 150px !important;
 }
+.id-card .photo {
+    border: 1px solid #ccc;
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+    overflow: hidden;
+    position: relative;
+    background: #ffffff;
+}
+.id-card .photo a {
+    display: inline-block;
+}
+.id-card .photo img {
+    max-width: 100%;
+    position: absolute;
+    left: 50%;
+    top:50%;
+    transform: translate(-50%, -50%);
+}
+.id-card .photo .initials {
+    position: absolute;
+    left: 50%;
+    top:50%;
+    transform: translate(-50%, -50%);
+    font-size: 22px;
+    display: inline-block;
+}
+
 
 .brand h1{
     font-size: 16px;

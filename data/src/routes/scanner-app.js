@@ -77,8 +77,6 @@ router.get('/scanner-app/logout', async (req, res, next) => {
 
 router.get('/scanner-app', middlewares.requireAuthScanner, async (req, res, next) => {
     try {
-console.log(res.authScanner.type )
-
         res.render('scanner-app/index.html', {
             scanner: res.authScanner
         })
@@ -100,13 +98,14 @@ router.get('/scanner-app/find', middlewares.requireAuthScanner, async (req, res,
             throw new Error('Person not found.')
         }
 
+        return res.redirect(`/scanner-app/verify?code=${code}`)
+
         // Last log for this person in this entity
         let log = await db.main.Log.findOne({
             personId: person._id,
             entityId: authScanner.entityId,
         }).sort({_id: -1 })
 
-console.log(log, authScanner.type )
         if(authScanner.type === 1) { // Entrance
             // Check if already entered 
             if(lodash.get(log, 'inside') === true){
@@ -151,6 +150,109 @@ console.log(log, authScanner.type )
         res.render('scanner-app/error.html',{
             error: err.message
         })
+    }
+});
+
+router.get('/scanner-app/verify', middlewares.requireAuthScanner, async (req, res, next) => {
+    try {
+        let authScanner = res.authScanner
+        let code = lodash.get(req, 'query.code')
+
+        let person = await db.main.Person.findOne({
+            uid: code
+        })
+
+        if(!person){
+            throw new Error('Person not found.')
+        }
+
+        res.render('scanner-app/verify.html',{
+            authScanner: authScanner.toObject(),
+            person: person,
+        })
+
+    } catch (err) {
+        res.render('scanner-app/error.html',{
+            error: err.message
+        })
+    }
+});
+
+router.post('/scanner-app/scan', middlewares.requireAuthScanner, async (req, res, next) => {
+    try {
+        let authScanner = res.authScanner
+        let code = lodash.get(req, 'body.code')
+
+        let person = await db.main.Person.findOne({
+            uid: code
+        })
+
+        if(!person){
+            throw new Error('Person not found.')
+        }
+        
+        // Last log for this person in this entity
+        let log = await db.main.Log.findOne({
+            personId: person._id,
+            entityId: authScanner.entityId,
+        }).sort({_id: -1 })
+
+        if(authScanner.type === 1) { // Entrance
+            // Check if already entered 
+            if(lodash.get(log, 'inside') === true){
+                throw new Error('Person already entered. Please scan your QR code in the exit scanner to continue.')
+            }
+
+            log = new db.main.Log({
+                personId: person._id,
+                entityId: authScanner.entityId,
+                inside: true,
+                enteredOn: authScanner._id,
+                enteredAt: new Date(),
+            })
+            await log.save()
+
+        } else if(authScanner.type === 2) { // Exit
+            // Check if already exited
+            if(lodash.get(log, 'inside') === false){
+                throw new Error('Person already exited.')
+            }
+
+            if(!log){
+                throw new Error('Person has not entered here. Cannot use exit scanner.')
+            } else {
+                log.exitedOn = authScanner._id
+                log.exitedAt = new Date()
+                log.inside = false
+                await log.save()
+            }
+        } else { 
+            throw new Error(`Invalid scanner type "${authScanner.type}".`)
+        }
+
+
+        res.render('scanner-app/check-in.html',{
+            authScanner: authScanner.toObject(),
+            person: person,
+            log: log,
+        })
+
+    } catch (err) {
+        res.render('scanner-app/error.html',{
+            error: err.message
+        })
+    }
+});
+
+router.get('/scanner-app/check-in', middlewares.requireAuthScanner, async (req, res, next) => {
+    try {
+        res.render('scanner-app/check-in.html', {
+            authScanner: authScanner.toObject(),
+            person: person,
+            // log: log,
+        })
+    } catch (err) {
+        next(err);
     }
 });
 

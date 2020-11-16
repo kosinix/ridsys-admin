@@ -15,6 +15,7 @@ router.use(require('./routes/application'));
 router.use(require('./routes/entity'));
 router.use(require('./routes/scanner'));
 router.use(require('./routes/scanner-app'));
+router.use(require('./routes/reports'));
 
 // 404 Page
 router.use((req, res) => {

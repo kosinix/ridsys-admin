@@ -7,6 +7,7 @@ const fileUpload = require('express-fileupload')
 const flash = require('kisapmata')
 const phAddress = require('ph-address')
 const lodash = require('lodash')
+const lodashGet = require('lodash.get')
 const moment = require('moment')
 const qr = require('qr-image')
 
@@ -23,10 +24,92 @@ router.use('/reports', middlewares.guardRoute(['read_all_admin', 'create_admin',
 
 router.get('/reports/all', async (req, res, next) => {
     try {
-        let admins = await db.main.User.find()
+        let logs = await db.main.Log.find({
+            enteredAt: {
+                $gte: moment('2020-08-20').toDate(),
+                $lt: moment('2020-08-21').toDate()
+            }
+        })
+
+        let promises = logs.map((log, i) => {
+            return db.main.Person.findById(log.personId)
+        })
+        let residents = await Promise.all(promises)
+        // return res.send(residents)
         res.render('reports/all.html', {
             flash: flash.get(req, 'reports'),
-            admins: admins
+            residents: residents
+        });
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get('/reports/person', async (req, res, next) => {
+    try {
+        // let logs = await db.main.Log.find({
+        //     enteredAt: {
+        //         $gte: moment('2020-08-20').toDate(),
+        //         $lt: moment('2020-08-21').toDate()
+        //     }
+        // })
+
+        let firstName = lodashGet(req, 'query.firstName', '')
+        let middleName = lodashGet(req, 'query.middleName', '')
+        let lastName = lodashGet(req, 'query.lastName', '')
+
+        let persons = await db.main.Person.find({
+            firstName: firstName,
+            middleName: middleName,
+            lastName: lastName,
+        })
+      
+        res.render('reports/person.html', {
+            flash: flash.get(req, 'reports'),
+            persons: persons,
+            query: req.query
+        });
+    } catch (err) {
+        next(err);
+    }
+});
+
+
+router.get('/reports/person/:personId/logs', async (req, res, next) => {
+    try {
+        // let logs = await db.main.Log.find({
+        //     enteredAt: {
+        //         $gte: moment('2020-08-20').toDate(),
+        //         $lt: moment('2020-08-21').toDate()
+        //     }
+        // })
+
+        let personId = lodashGet(req, 'params.personId', '')
+
+        let person = await db.main.Person.findById(personId)
+      
+        let logs = await db.main.Log.find({
+            personId: personId,
+        })
+
+        for (let x = 0; x < logs.length; x++) {
+            let log = logs[x].toObject()
+            log.person = person.toObject()
+            log.entity = await db.main.Entity.findOne({
+                _id: log.entityId
+            })
+            log.scannerIn = await db.main.Scanner.findOne({
+                _id: log.enteredOn
+            })
+            log.scannerOut = await db.main.Scanner.findOne({
+                _id: log.exitedOn
+            })
+            logs[x] = log
+        }
+
+        res.render('reports/person-logs.html', {
+            flash: flash.get(req, 'reports'),
+            logs: logs
         });
     } catch (err) {
         next(err);
@@ -306,7 +389,7 @@ router.post('/reports/photo/:personId', middlewares.getPerson, fileUpload(), mid
 router.get('/reports/id-card/:personId', middlewares.getPerson, async (req, res, next) => {
     try {
         let person = res.person
-        let qrCodeSvg = qr.imageSync(person.uid, {size: 3, type: 'svg'})
+        let qrCodeSvg = qr.imageSync(person.uid, { size: 3, type: 'svg' })
         res.render('reports/id-card.html', {
             person: person,
             qrCodeSvg: qrCodeSvg,
@@ -349,13 +432,13 @@ router.get('/reports/delete/:personId', middlewares.getPerson, async (req, res, 
                 Bucket: bucketName,
                 Delete: {
                     Objects: [
-                        {Key: `${bucketKeyPrefix}${photo}`},
-                        {Key: `${bucketKeyPrefix}tiny-${photo}`},
-                        {Key: `${bucketKeyPrefix}small-${photo}`},
-                        {Key: `${bucketKeyPrefix}medium-${photo}`},
-                        {Key: `${bucketKeyPrefix}large-${photo}`},
-                        {Key: `${bucketKeyPrefix}xlarge-${photo}`},
-                        {Key: `${bucketKeyPrefix}orig-${photo}`},
+                        { Key: `${bucketKeyPrefix}${photo}` },
+                        { Key: `${bucketKeyPrefix}tiny-${photo}` },
+                        { Key: `${bucketKeyPrefix}small-${photo}` },
+                        { Key: `${bucketKeyPrefix}medium-${photo}` },
+                        { Key: `${bucketKeyPrefix}large-${photo}` },
+                        { Key: `${bucketKeyPrefix}xlarge-${photo}` },
+                        { Key: `${bucketKeyPrefix}orig-${photo}` },
                     ]
                 }
             }).promise()
@@ -371,13 +454,13 @@ router.get('/reports/delete/:personId', middlewares.getPerson, async (req, res, 
                     Bucket: bucketName,
                     Delete: {
                         Objects: [
-                            {Key: `${bucketKeyPrefix}${bucketKey}`},
-                            {Key: `${bucketKeyPrefix}tiny-${bucketKey}`},
-                            {Key: `${bucketKeyPrefix}small-${bucketKey}`},
-                            {Key: `${bucketKeyPrefix}medium-${bucketKey}`},
-                            {Key: `${bucketKeyPrefix}large-${bucketKey}`},
-                            {Key: `${bucketKeyPrefix}xlarge-${bucketKey}`},
-                            {Key: `${bucketKeyPrefix}orig-${bucketKey}`},
+                            { Key: `${bucketKeyPrefix}${bucketKey}` },
+                            { Key: `${bucketKeyPrefix}tiny-${bucketKey}` },
+                            { Key: `${bucketKeyPrefix}small-${bucketKey}` },
+                            { Key: `${bucketKeyPrefix}medium-${bucketKey}` },
+                            { Key: `${bucketKeyPrefix}large-${bucketKey}` },
+                            { Key: `${bucketKeyPrefix}xlarge-${bucketKey}` },
+                            { Key: `${bucketKeyPrefix}orig-${bucketKey}` },
                         ]
                     }
                 }).promise()

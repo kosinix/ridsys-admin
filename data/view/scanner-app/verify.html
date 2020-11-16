@@ -1,0 +1,81 @@
+{% extends "document-public.html" %}
+
+{% block body %}
+<div class="col-md-6 ml-auto mr-auto pt-5 mt-5">
+    <div id="vApp" v-cloak>
+        <div class="form-login">
+            <div class="form-header">
+                <h1 class="h6 mb-0">Scanner: {{authScanner.name}}</h1>
+            </div>
+            <div class="form-body text-center">
+                <div class="h3 mb-4">Verify Person</div>
+                <p>Is this person the same as the one in front of you?</p>
+                <div class="mb-5">
+                    <form action="/scanner-app/scan" method="POST">
+                        <a href="/scanner-app" class="btn btn-danger">No</a>
+                        <input type="hidden" name="code" value="{{person.uid}}">
+                        <button class="btn btn-success">Yes</button>
+                    </form>
+                </div>
+                <div class="profile-photo mb-3">
+                    {% if person.profilePhoto %}
+                    <img src="{{person.profilePhoto|s3_url('medium')}}" alt="photo">
+                    {% else %}
+                    <span class="initials">
+                        {{person.firstName|first}} 
+                        {{person.lastName|first}}
+                    </span>
+                    {% endif %}
+                </div>
+                <h1 class="h5 mb-3 text-uppercase">
+                    <u title="First Name">{{person.firstName}}</u> 
+                    <u title="Middle Name">{{person.middleName}}</u>
+                    <u title="Last Name">{{person.lastName}}</u>
+                    <u title="Suffix">{{person.suffix}}</u>
+                    
+                </h1>
+                <p class="text-left">Address: <strong>{{person.address}}</strong></p>
+                <p class="text-left">Date of Birth: <strong>{{person.birthDate|format_date("MMM DD, YYYY")}}</strong> <em>({{person.birthDate|age}} yrs old)</em></p>
+                <p class="text-left">Gender: <strong>{{person.gender}}</strong></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script>
+    var vApp = new Vue({
+        el: '#vApp',
+        delimiters: ["${", "}"],
+        mixins: [
+            window.vuelidate.validationMixin,
+            window.vuelidateExtendMixin,
+        ],
+        data: {
+            code: '',
+            remaining: 5,
+            timer: null,
+            hideCancel: false
+        },
+        validations: {
+        },
+        mounted: function(){
+            var me = this;
+            {# me.timer = setInterval(function(){
+                me.remaining -= 1;
+                if (me.remaining <= 0) {
+                    clearInterval(me.timer)
+                    window.location.replace("/scanner-app");
+                }
+            },1000) #}
+        },
+        methods: {
+            onCancel: function(){
+                this.hideCancel = true;
+                clearInterval(this.timer)
+            },
+        }
+    });
+</script>
+{% endblock %}
